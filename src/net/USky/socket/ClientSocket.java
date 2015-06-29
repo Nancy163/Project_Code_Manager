@@ -2,6 +2,7 @@ package net.USky.socket;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.util.EncodingUtils;
 
@@ -19,8 +23,8 @@ import android.util.Log;
 import android.util.Xml.Encoding;
 
 public class ClientSocket extends Thread {
-	InputStream br = null;
-	private DataOutputStream dos;
+	BufferedReader br = null;
+	private BufferedWriter dos;
 	private Socket s;
 	InputStream is;
 	OutputStream os;
@@ -28,15 +32,12 @@ public class ClientSocket extends Thread {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		boolean flag = false;
 		try {
-			s = new Socket("192.168.199.192", 9001);
-			// s.setSoTimeout(5000);
+			s = new Socket("192.168.199.187", 9001);
 			s.setTcpNoDelay(isAlive());
 			// 判断连接是否断开
 			is = s.getInputStream();
 			os = s.getOutputStream();
-			flag = s.isConnected();
 			sendMessage("OK");
 			sendMessage("OK");
 
@@ -76,9 +77,8 @@ public class ClientSocket extends Thread {
 	// 向服务器发送消息
 	public void sendMessage(String str) {
 		try {
-			dos = new DataOutputStream(os);
-			dos.writeUTF(str);
-
+			dos = new BufferedWriter(new OutputStreamWriter(os, "utf-8"));
+			dos.write(str);
 			dos.flush();// 写完后要记得flush
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -87,19 +87,20 @@ public class ClientSocket extends Thread {
 	}
 
 	// 获取到服务器发送过来的消息
-	public boolean getMessage() {
-		int len = 0;
-		String flag = "";
-		br = is;
+	public String  getMessage() {
+		int len;
+		String str="";
 		try {
-			byte by[] = new byte[1024];
-			while ((len = br.read(by)) != -1) {
-				flag = EncodingUtils.getString(by, "utf-8");
+			br = new BufferedReader(new InputStreamReader(is, "utf-8"));
+			char[] ch = new char[20];
+			while ((len = br.read(ch)) != -1) {
+				str = String.valueOf(ch);
+				System.out.println((String.valueOf(ch)).substring(1,
+						str.lastIndexOf("}")));
 			}
-			System.out.println("-------------" + flag);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return true;
+		return str;
 	}
 }

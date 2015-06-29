@@ -37,10 +37,6 @@ public class MainActivity extends Activity {
 
 	// 语音听写对象
 	private SpeechRecognizer mIat;
-	// 缓冲进度
-	private int mPercentForBuffering = 0;
-	// 播放进度
-	private int mPercentForPlaying = 0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -143,22 +139,10 @@ public class MainActivity extends Activity {
 		@Override
 		public void onBufferProgress(int percent, int beginPos, int endPos,
 				String info) {
-			mPercentForBuffering = percent;
-			// Toast.makeText(
-			// MainActivity.this,
-			// String.format(getString(R.string.tts_toast_format),
-			// mPercentForBuffering, mPercentForPlaying),
-			// Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
 		public void onSpeakProgress(int percent, int beginPos, int endPos) {
-			mPercentForPlaying = percent;
-			// Toast.makeText(
-			// MainActivity.this,
-			// String.format(getString(R.string.tts_toast_format),
-			// mPercentForBuffering, mPercentForPlaying),
-			// // Toast.LENGTH_SHORT).show();
 		}
 
 		@Override
@@ -315,7 +299,6 @@ public class MainActivity extends Activity {
 		}
 
 	};
-
 
 	@Override
 	protected void onStop() {

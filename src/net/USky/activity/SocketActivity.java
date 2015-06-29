@@ -20,7 +20,6 @@ public class SocketActivity extends Activity {
 	Button send;
 	ListView lv;
 	List<InfoEntity> list;
-	private InfoAdapter adapter;
 	private ClientSocket socket;
 	private String tt;
 
@@ -41,16 +40,6 @@ public class SocketActivity extends Activity {
 			}
 		});
 
-		// adapter = new InfoAdapter(list, SocketActivity.this);
-		// String data = socket.getMessage();
-		// adapter.notifyDataSetChanged();
-		//
-		// if (data != null && data != "") {
-		// InfoEntity entity = new InfoEntity();
-		// entity.setData(data);
-		// list.add(entity);
-		// lv.setAdapter(adapter);
-		// }
 	}
 
 	// 组件初始化
