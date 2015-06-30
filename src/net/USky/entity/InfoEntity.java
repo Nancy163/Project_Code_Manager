@@ -1,19 +1,23 @@
 package net.USky.entity;
 
 public class InfoEntity {
-	private String data;
+	private String handler;
+	private UserEntity data;
 
-	public String getData() {
+	public String getHandler() {
+		return handler;
+	}
+
+	public void setHandler(String handler) {
+		this.handler = handler;
+	}
+
+	public UserEntity getData() {
 		return data;
 	}
 
-	public void setData(String data) {
+	public void setData(UserEntity data) {
 		this.data = data;
-	}
-
-	@Override
-	public String toString() {
-		return "InfoEntity [data=" + data + "]";
 	}
 
 }

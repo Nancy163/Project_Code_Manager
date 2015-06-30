@@ -17,10 +17,15 @@ import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.USky.activity.MainActivity;
+
 import org.apache.http.util.EncodingUtils;
 
+import android.content.Context;
+import android.util.Base64;
 import android.util.Log;
 import android.util.Xml.Encoding;
+import android.widget.Toast;
 
 public class ClientSocket extends Thread {
 	BufferedReader br = null;
@@ -28,6 +33,7 @@ public class ClientSocket extends Thread {
 	private Socket s;
 	InputStream is;
 	OutputStream os;
+	Context context;
 
 	@Override
 	public void run() {
@@ -38,8 +44,8 @@ public class ClientSocket extends Thread {
 			// 判断连接是否断开
 			is = s.getInputStream();
 			os = s.getOutputStream();
-			sendMessage("OK");
-			sendMessage("OK");
+			sendMessage("POST");
+			// sendMessage("POST");
 
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -87,16 +93,21 @@ public class ClientSocket extends Thread {
 	}
 
 	// 获取到服务器发送过来的消息
-	public String  getMessage() {
+	public String getMessage() {
 		int len;
-		String str="";
+		String str = "";
 		try {
 			br = new BufferedReader(new InputStreamReader(is, "utf-8"));
-			char[] ch = new char[20];
+			char[] ch = new char[502];
 			while ((len = br.read(ch)) != -1) {
 				str = String.valueOf(ch);
-				System.out.println((String.valueOf(ch)).substring(1,
-						str.lastIndexOf("}")));
+				// 服务器返回的数据
+				String data = (String.valueOf(ch)).substring(2,
+						str.lastIndexOf("))"));
+//				if (data.contains("ok")) {
+//					// 传值给activity
+				// }
+				Log.e("-----------", "----------" + data);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

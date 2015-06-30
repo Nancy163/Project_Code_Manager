@@ -1,5 +1,12 @@
 package net.USky.activity;
 
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import net.USky.parse.DataParse;
+import net.USky.socket.ClientSocket;
 import net.USky.util.JsonParser;
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lasttest.R;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerListener;
@@ -22,6 +31,7 @@ import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.SynthesizerListener;
+import com.iflytek.cloud.a.h.g;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 
@@ -38,9 +48,12 @@ public class MainActivity extends Activity {
 	// 语音听写对象
 	private SpeechRecognizer mIat;
 
+	private ClientSocket socket;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
+		socket = new ClientSocket();
+		socket.start();
 		super.onCreate(savedInstanceState);
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_main);
@@ -183,7 +196,7 @@ public class MainActivity extends Activity {
 
 			// 朗读 （语音合成）
 			if (msg.what == 0) {
-				String text1 = "您好，现在我们要对您进行验光了，您准备好了么？    请在三秒后回答。。。。。。";
+				String text1 = "您好,请在三秒后说话。。。。。。";
 
 				// 设置参数
 				setParam2();
@@ -231,15 +244,20 @@ public class MainActivity extends Activity {
 
 		public void onResult(RecognizerResult results, boolean isLast) {
 			String text = JsonParser.parseIatResult(results.getResultString());
-			center.setText(text);
-			System.out.println("-------------" + text);
+			// 向服务器发送消息
+			if (text != null && text != "") {
+				center.setText(text);
+				socket.sendMessage(DataParse
+						.toJson(text, "77", "^^", "", "666"));
+			}
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			handler.sendEmptyMessage(0);
+			// 唤醒语音播放
+			// handler.sendEmptyMessage(0);
 
 		}
 
@@ -260,21 +278,18 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onBeginOfSpeech() {
-			Toast.makeText(MainActivity.this, "开始说话", Toast.LENGTH_SHORT)
-					.show();
+			// "开始说话"
 		}
 
 		@Override
 		public void onEndOfSpeech() {
-			Toast.makeText(MainActivity.this, "结束说话", Toast.LENGTH_SHORT)
-					.show();
+			// "结束说话"
 		}
 
 		@Override
 		public void onResult(RecognizerResult results, boolean isLast) {
 			String text = JsonParser.parseIatResult(results.getResultString());
 			center.setText(text);
-			System.out.println("-------------" + text + isLast);
 			if (isLast) {
 				// TODO 最后的结果
 
@@ -283,8 +298,7 @@ public class MainActivity extends Activity {
 
 		@Override
 		public void onVolumeChanged(int volume) {
-			Toast.makeText(MainActivity.this, "当前正在说话，音量大小：" + volume,
-					Toast.LENGTH_SHORT).show();
+			// "当前正在说话，音量大小：" + volume
 		}
 
 		@Override
